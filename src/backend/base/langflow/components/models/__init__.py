@@ -5,6 +5,7 @@ from .azure_openai import AzureChatOpenAIComponent
 from .baidu_qianfan_chat import QianfanChatEndpointComponent
 from .cohere import CohereComponent
 from .google_generative_ai import GoogleGenerativeAIComponent
+from .google_generative_ai_factory import GoogleGenerativeAIFactoryComponent
 from .huggingface import HuggingFaceEndpointsComponent
 from .ollama import ChatOllamaComponent
 from .openai import OpenAIModelComponent
@@ -20,6 +21,7 @@ __all__ = [
     "ChatVertexAIComponent",
     "CohereComponent",
     "GoogleGenerativeAIComponent",
+    "GoogleGenerativeAIFactoryComponent",
     "HuggingFaceEndpointsComponent",
     "OpenAIModelComponent",
     "PerplexityComponent",

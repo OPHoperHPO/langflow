@@ -125,7 +125,7 @@ class GeminiFactory:
             **kwargs,
         )
 
-class GoogleGenerativeAIComponent(LCModelComponent):
+class GoogleGenerativeAIFactoryComponent(LCModelComponent):
     display_name = "Google Generative AI Factory"
     description = "Generate text using Google Generative AI. Supports Token Hotswap."
     icon = "GoogleGenerativeAI"

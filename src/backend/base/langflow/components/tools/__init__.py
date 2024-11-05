@@ -6,6 +6,7 @@ from .bing_search_api import BingSearchAPIComponent
 from .calculator import CalculatorToolComponent
 from .duck_duck_go_search_run import DuckDuckGoSearchComponent
 from .glean_search_api import GleanSearchAPIComponent
+from .gcse_api import GCSEAPIComponent
 from .google_search_api import GoogleSearchAPIComponent
 from .google_serper_api import GoogleSerperAPIComponent
 from .python_code_structured_tool import PythonCodeStructuredTool
@@ -31,6 +32,7 @@ __all__ = [
     "CalculatorToolComponent",
     "DuckDuckGoSearchComponent",
     "GleanSearchAPIComponent",
+    "GCSEAPIComponent",
     "GoogleSearchAPIComponent",
     "GoogleSerperAPIComponent",
     "PythonCodeStructuredTool",
