@@ -53,8 +53,8 @@ jobs:
           tags: OPHoperHPO/langflow:latest-dev-backend
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
-          build-args: 
-            - LANGFLOW_IMAGE=OPHoperHPO/langflow:latest-dev
+          build-args: |
+            LANGFLOW_IMAGE=OPHoperHPO/langflow:latest-dev
       - name: Build and push (latest-dev-frontend) image
         uses: docker/build-push-action@v6
         with:
@@ -64,6 +64,6 @@ jobs:
           tags: OPHoperHPO/langflow:latest-dev-frontend
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
-          build-args: 
-            - LANGFLOW_IMAGE=OPHoperHPO/langflow:latest-dev
+          build-args: |
+            LANGFLOW_IMAGE=OPHoperHPO/langflow:latest-dev
   
