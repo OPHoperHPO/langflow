@@ -34,7 +34,7 @@ jobs:
           context: .
           push: true
           file: docker/build_and_push.Dockerfile
-          tags: ghcr.io/OPHoperHPO/langflow:latest-dev
+          tags: ghcr.io/ophoperhpo/langflow:latest-dev
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
       - name: Build and push (latest-dev) image
@@ -43,7 +43,7 @@ jobs:
           context: .
           push: true
           file: docker/build_and_push.Dockerfile
-          tags: ghcr.io/OPHoperHPO/langflow:latest-dev
+          tags: ghcr.io/ophoperhpo/langflow:latest-dev
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
       - name: Build and push (latest-dev-backend) image
@@ -52,20 +52,20 @@ jobs:
           context: .
           push: true
           file: docker/build_and_push_backend.Dockerfile
-          tags: ghcr.io/OPHoperHPO/langflow:latest-dev-backend
+          tags: ghcr.io/ophoperhpo/langflow:latest-dev-backend
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
           build-args: |
-            LANGFLOW_IMAGE=ghcr.io/OPHoperHPO/langflow:latest-dev
+            LANGFLOW_IMAGE=ghcr.io/ophoperhpo/langflow:latest-dev
       - name: Build and push (latest-dev-frontend) image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           file: docker/build_and_push_frontend.Dockerfile
-          tags: ghcr.io/OPHoperHPO/langflow:latest-dev-frontend
+          tags: ghcr.io/ophoperhpo/langflow:latest-dev-frontend
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
           build-args: |
-            LANGFLOW_IMAGE=ghcr.io/OPHoperHPO/langflow:latest-dev
+            LANGFLOW_IMAGE=ghcr.io/ophoperhpo/langflow:latest-dev
   
