@@ -62,7 +62,7 @@ jobs:
         with:
           context: .
           push: true
-          file: docker/build_and_push_frontend.Dockerfile
+          file: docker/frontend/build_and_push_frontend.Dockerfile
           tags: ghcr.io/ophoperhpo/langflow:latest-dev-frontend
           # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
           provenance: false
