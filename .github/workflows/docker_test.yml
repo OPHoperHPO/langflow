@@ -20,6 +20,8 @@ jobs:
       packages: write
     name: Test docker images
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Login to Github Container Registry
         uses: docker/login-action@v3
         with:
