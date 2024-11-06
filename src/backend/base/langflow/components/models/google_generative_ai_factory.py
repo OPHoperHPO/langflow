@@ -3,7 +3,7 @@ from pydantic.v1 import SecretStr
 
 from langflow.base.models.model import LCModelComponent
 from langflow.field_typing import LanguageModel
-from langflow.inputs import DropdownInput, FloatInput, IntInput, SecretStrInput, MultilineSecretInput, StrInput
+from langflow.inputs import DropdownInput, FloatInput, IntInput, SecretStrInput, StrInput
 from langflow.inputs.inputs import HandleInput
 
 
