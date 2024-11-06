@@ -65,6 +65,15 @@ class GCSEAPIComponent(LCToolComponent):
                     """
                     self.api_url = api_url
                     self.api_token = api_token
+
+                    self.transport = httpx.AsyncHTTPTransport(retries=8)
+            
+                    # Define connection limits for the HTTP client
+                    self.limits = httpx.Limits(
+                        max_keepalive_connections=20,  # Maximum number of keep-alive connections
+                        max_connections=100,  # Maximum number of connections allowed at once
+                    )
+            
             
                 async def search(
                     self,
