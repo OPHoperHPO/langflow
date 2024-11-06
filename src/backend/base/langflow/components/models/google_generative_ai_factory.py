@@ -20,111 +20,6 @@ from langchain_google_genai._common import (
     get_client_info,
 )
 
-
-class ModLLM(ChatGoogleGenerativeAI):
-
-    def __init__(self, *args: Any, _token_factory: Callable[[], str], **kwargs: Any):
-        super().__init__(*args, **kwargs)
-        self._token_factory = _token_factory
-
-    def _generate(self, *args, **kwargs):
-        self.client = genaix.build_generative_service(
-            credentials=self.credentials,
-            api_key=self._token_factory(),
-            client_info=get_client_info("ChatGoogleGenerativeAI"),
-            client_options=self.client_options,
-            transport=self.transport,
-        )
-        retry = 0
-        while True:
-            try:
-                return super()._generate(*args, **kwargs)
-            except Exception as e:
-                print(e)
-                retry += 1
-                time.sleep(1)
-                if retry > 10:
-                    raise e
-                self.client = genaix.build_generative_service(
-                    credentials=self.credentials,
-                    api_key=self._token_factory(),
-                    client_info=get_client_info("ChatGoogleGenerativeAI"),
-                    client_options=self.client_options,
-                    transport=self.transport,
-                )
-                continue
-
-    async def _agenerate(self, *args, **kwargs):
-        self.async_client = genaix.build_generative_async_service(
-            credentials=self.credentials,
-            api_key=self._token_factory(),
-            client_info=get_client_info("ChatGoogleGenerativeAI"),
-            client_options=self.client_options,
-            transport=self.transport,
-        )
-        retry = 0
-        while True:
-            try:
-                return await super()._agenerate(*args, **kwargs)
-            except Exception as e:
-                print(e)
-                await asyncio.sleep(1)
-                retry += 1
-                if retry > 10:
-                    raise e
-
-                self.async_client = genaix.build_generative_async_service(
-                    credentials=self.credentials,
-                    api_key=self._token_factory(),
-                    client_info=get_client_info("ChatGoogleGenerativeAI"),
-                    client_options=self.client_options,
-                    transport=self.transport,
-                )
-                continue
-
-
-class GeminiFactory:
-    def __init__(
-        self,
-        api_keys: List[str],
-        auth_postfix: Optional[str],
-        base_url: Optional[str],
-        transport: Optional[str] = "rest",
-    ):
-        self._api_keys = api_keys
-        self._usage_per_key = [0] * len(api_keys)
-        self._base_url = base_url
-        self._transport = transport
-        self._auth_postfix = auth_postfix
-
-    def get_key(self) -> str:
-        min_usage = min(self._usage_per_key)
-        key_index = self._usage_per_key.index(min_usage)
-        self._usage_per_key[key_index] += 1
-        if self._usage_per_key[key_index] % 100 == 0:
-            self._usage_per_key[key_index] = 0
-        return self._api_keys[key_index] + self._auth_postfix
-
-    def __call__(
-        self,
-        **kwargs,
-    ) -> ModLLM:
-        if not "safety_settings" in kwargs:
-            kwargs["safety_settings"] = {
-                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-            }
-
-        return ModLLM(
-            transport=self._transport,
-            client_options={"api_endpoint": self._base_url},
-            google_api_key=self.get_key(),
-            _token_factory=self.get_key,
-            **kwargs,
-        )
-
 class GoogleGenerativeAIFactoryComponent(LCModelComponent):
     display_name = "Google Generative AI Factory"
     description = "Generate text using Google Generative AI. Supports Token Hotswap."
@@ -200,6 +95,111 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
         top_k = self.top_k
         top_p = self.top_p
         n = self.n
+
+
+        class ModLLM(ChatGoogleGenerativeAI):
+        
+            def __init__(self, *args: Any, _token_factory: Callable[[], str], **kwargs: Any):
+                super().__init__(*args, **kwargs)
+                self._token_factory = _token_factory
+        
+            def _generate(self, *args, **kwargs):
+                self.client = genaix.build_generative_service(
+                    credentials=self.credentials,
+                    api_key=self._token_factory(),
+                    client_info=get_client_info("ChatGoogleGenerativeAI"),
+                    client_options=self.client_options,
+                    transport=self.transport,
+                )
+                retry = 0
+                while True:
+                    try:
+                        return super()._generate(*args, **kwargs)
+                    except Exception as e:
+                        print(e)
+                        retry += 1
+                        time.sleep(1)
+                        if retry > 10:
+                            raise e
+                        self.client = genaix.build_generative_service(
+                            credentials=self.credentials,
+                            api_key=self._token_factory(),
+                            client_info=get_client_info("ChatGoogleGenerativeAI"),
+                            client_options=self.client_options,
+                            transport=self.transport,
+                        )
+                        continue
+        
+            async def _agenerate(self, *args, **kwargs):
+                self.async_client = genaix.build_generative_async_service(
+                    credentials=self.credentials,
+                    api_key=self._token_factory(),
+                    client_info=get_client_info("ChatGoogleGenerativeAI"),
+                    client_options=self.client_options,
+                    transport=self.transport,
+                )
+                retry = 0
+                while True:
+                    try:
+                        return await super()._agenerate(*args, **kwargs)
+                    except Exception as e:
+                        print(e)
+                        await asyncio.sleep(1)
+                        retry += 1
+                        if retry > 10:
+                            raise e
+        
+                        self.async_client = genaix.build_generative_async_service(
+                            credentials=self.credentials,
+                            api_key=self._token_factory(),
+                            client_info=get_client_info("ChatGoogleGenerativeAI"),
+                            client_options=self.client_options,
+                            transport=self.transport,
+                        )
+                        continue
+        
+        
+        class GeminiFactory:
+            def __init__(
+                self,
+                api_keys: List[str],
+                auth_postfix: Optional[str],
+                base_url: Optional[str],
+                transport: Optional[str] = "rest",
+            ):
+                self._api_keys = api_keys
+                self._usage_per_key = [0] * len(api_keys)
+                self._base_url = base_url
+                self._transport = transport
+                self._auth_postfix = auth_postfix
+        
+            def get_key(self) -> str:
+                min_usage = min(self._usage_per_key)
+                key_index = self._usage_per_key.index(min_usage)
+                self._usage_per_key[key_index] += 1
+                if self._usage_per_key[key_index] % 100 == 0:
+                    self._usage_per_key[key_index] = 0
+                return self._api_keys[key_index] + self._auth_postfix
+        
+            def __call__(
+                self,
+                **kwargs,
+            ) -> ModLLM:
+                if not "safety_settings" in kwargs:
+                    kwargs["safety_settings"] = {
+                        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                    }
+        
+                return ModLLM(
+                    transport=self._transport,
+                    client_options={"api_endpoint": self._base_url},
+                    google_api_key=self.get_key(),
+                    _token_factory=self.get_key,
+                    **kwargs,
+        )
 
         factory = GeminiFactory(api_keys=MultilineSecretInput(self.google_api_keys).get_secret_value(), 
                                 auth_postfix=SecretStrInput(self.google_auth_postfix).get_secret_value(),
