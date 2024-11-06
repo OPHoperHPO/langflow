@@ -13,7 +13,9 @@ from langflow.schema import Data
 
 from typing import List, Optional, Dict, Any
 
-class GoogleSearchError(Exception):
+__all__ = ["GCSEAPIComponent"]
+
+class GoogleSearchError(BaseException):
     """Custom exception class to handle errors related to Google Custom Search API"""
 
     pass
