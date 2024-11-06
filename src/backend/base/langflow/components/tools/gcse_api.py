@@ -227,10 +227,10 @@ class GCSEAPIComponent(LCToolComponent):
             name="gcse_search_api",
             description="Search for recent results using GCSE with result limiting",
             func=search_func,
-            args_schema=self.SerpAPISchema,
+            args_schema=self.GCSEAPISchema,
         )
 
-        self.status = "SerpAPI Tool created"
+        self.status = "GCSEAPI Tool created"
         return tool
 
     def run_model(self) -> list[Data]:
