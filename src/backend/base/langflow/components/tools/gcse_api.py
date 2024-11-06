@@ -1,4 +1,3 @@
-from backend.base.langflow.inputs.inputs import StrInput
 import httpx
 
 from typing import Any
@@ -9,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from langflow.base.langchain_utilities.model import LCToolComponent
 from langflow.field_typing import Tool
-from langflow.inputs import IntInput, MultilineInput, SecretStrInput
+from langflow.inputs import IntInput, MultilineInput, SecretStrInput, StrInput
 from langflow.schema import Data
 from typing import List, Optional, Dict, Any
 
