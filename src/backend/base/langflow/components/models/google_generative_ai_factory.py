@@ -202,9 +202,9 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                     **kwargs,
         )
 
-        factory = GeminiFactory(api_keys=SecretStrInput(self.google_api_keys).get_secret_value().strip().split(";"), 
-                                auth_postfix=SecretStrInput(self.google_auth_postfix).get_secret_value(),
-                                base_url=SecretStrInput(self.google_base_url).get_secret_value(),
+        factory = GeminiFactory(api_keys=self.google_api_keys.strip().split(";"), 
+                                auth_postfix=self.google_auth_postfix,
+                                base_url=self.google_base_url,
                                 transport=self.google_transport)
 
 
