@@ -63,28 +63,8 @@ class GCSEAPIComponent(LCToolComponent):
                         api_url (str): The base URL for the Google CSE API.
                         api_token (str): The authentication token used to authenticate API requests.
                     """
-                    # Configure HTTP transport with retries
-                    transport = httpx.AsyncHTTPTransport(retries=8)
-            
-                    # Define connection limits for the HTTP client
-                    limits = httpx.Limits(
-                        max_keepalive_connections=20,  # Maximum number of keep-alive connections
-                        max_connections=100,  # Maximum number of connections allowed at once
-                    )
-            
-                    # Create an asynchronous HTTP client with the given base URL and authentication token
-                    self.http_client = httpx.AsyncClient(
-                        base_url=api_url,  # Base URL for the API
-                        params={"authKey": api_token},  # Authentication parameter
-                        transport=transport,  # Custom transport settings
-                        limits=limits,  # Connection limits
-                    )
-                    self.sync_client = httpx.Client(
-                        base_url=api_url,
-                        params={"authKey": api_token},
-                        transport=httpx.HTTPTransport(retries=8),
-                        limits=limits,
-                    )
+                    self.api_url = api_url
+                    self.api_token = api_token
             
                 async def search(
                     self,
