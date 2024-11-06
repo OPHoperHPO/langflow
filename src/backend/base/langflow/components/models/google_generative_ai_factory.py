@@ -11,15 +11,7 @@ import asyncio
 import time
 from typing import List, Optional, Any, Callable
 
-from langchain_google_genai import (
-    ChatGoogleGenerativeAI,
-    HarmBlockThreshold,
-    HarmCategory,
-    _genai_extension as genaix,
-)
-from langchain_google_genai._common import (
-    get_client_info,
-)
+
 
 class GoogleGenerativeAIFactoryComponent(LCModelComponent):
     display_name = "Google Generative AI Factory"
@@ -97,6 +89,15 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
         top_p = self.top_p
         n = self.n
 
+        from langchain_google_genai import (
+            ChatGoogleGenerativeAI,
+            HarmBlockThreshold,
+            HarmCategory,
+            _genai_extension
+        )
+        from langchain_google_genai._common import (
+            get_client_info,
+        )
 
         class ModLLM(ChatGoogleGenerativeAI):
         
@@ -105,7 +106,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                 self._token_factory = _token_factory
         
             def _generate(self, *args, **kwargs):
-                self.client = genaix.build_generative_service(
+                self.client = _genai_extension.build_generative_service(
                     credentials=self.credentials,
                     api_key=self._token_factory(),
                     client_info=get_client_info("ChatGoogleGenerativeAI"),
@@ -122,7 +123,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                         time.sleep(1)
                         if retry > 10:
                             raise e
-                        self.client = genaix.build_generative_service(
+                        self.client = _genai_extension.build_generative_service(
                             credentials=self.credentials,
                             api_key=self._token_factory(),
                             client_info=get_client_info("ChatGoogleGenerativeAI"),
@@ -132,7 +133,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                         continue
         
             async def _agenerate(self, *args, **kwargs):
-                self.async_client = genaix.build_generative_async_service(
+                self.async_client = _genai_extension.build_generative_async_service(
                     credentials=self.credentials,
                     api_key=self._token_factory(),
                     client_info=get_client_info("ChatGoogleGenerativeAI"),
@@ -150,7 +151,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                         if retry > 10:
                             raise e
         
-                        self.async_client = genaix.build_generative_async_service(
+                        self.async_client = _genai_extension.build_generative_async_service(
                             credentials=self.credentials,
                             api_key=self._token_factory(),
                             client_info=get_client_info("ChatGoogleGenerativeAI"),
