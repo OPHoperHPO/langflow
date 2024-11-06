@@ -39,7 +39,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
             options=["gemini-1.5-pro", "gemini-1.5-flash", "gemini-1.0-pro", "gemini-1.0-pro-vision"],
             value="gemini-1.5-pro",
         ),
-        MultilineSecretInput(
+        SecretStrInput(
             name="google_api_keys",
             display_name="Google API Keys",
             info="The Google API Key to use for the Google Generative AI.",
@@ -202,7 +202,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                     **kwargs,
         )
 
-        factory = GeminiFactory(api_keys=MultilineSecretInput(self.google_api_keys).get_secret_value().strip().split("\n"), 
+        factory = GeminiFactory(api_keys=SecretStrInput(self.google_api_keys).get_secret_value().strip().split(";"), 
                                 auth_postfix=SecretStrInput(self.google_auth_postfix).get_secret_value(),
                                 base_url=SecretStrInput(self.google_base_url).get_secret_value(),
                                 transport=self.google_transport)
