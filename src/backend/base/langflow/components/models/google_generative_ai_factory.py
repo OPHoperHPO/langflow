@@ -1,10 +1,11 @@
+from __future__ import annotations
 from pydantic.v1 import SecretStr
 
 from langflow.base.models.model import LCModelComponent
 from langflow.field_typing import LanguageModel
 from langflow.inputs import DropdownInput, FloatInput, IntInput, SecretStrInput, MultilineSecretInput, StrInput
 from langflow.inputs.inputs import HandleInput
-from __future__ import annotations
+
 
 import asyncio
 import time
@@ -201,7 +202,7 @@ class GoogleGenerativeAIFactoryComponent(LCModelComponent):
                     **kwargs,
         )
 
-        factory = GeminiFactory(api_keys=MultilineSecretInput(self.google_api_keys).get_secret_value(), 
+        factory = GeminiFactory(api_keys=MultilineSecretInput(self.google_api_keys).get_secret_value().strip().split("\n"), 
                                 auth_postfix=SecretStrInput(self.google_auth_postfix).get_secret_value(),
                                 base_url=SecretStrInput(self.google_base_url).get_secret_value(),
                                 transport=self.google_transport)
