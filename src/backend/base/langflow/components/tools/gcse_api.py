@@ -1,3 +1,5 @@
+import httpx
+
 from typing import Any
 
 from langchain.tools import StructuredTool
@@ -10,194 +12,6 @@ from langflow.inputs import IntInput, MultilineInput, SecretStrInput
 from langflow.schema import Data
 
 from typing import List, Optional, Dict, Any
-
-import httpx
-from pydantic import BaseModel, ConfigDict
-
-
-class CseImage(BaseModel):
-    """Содержит URL исходного изображения."""
-
-    src: str
-    """URL исходного изображения."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class CseThumbnail(BaseModel):
-    """Содержит размеры и URL миниатюры изображения."""
-
-    height: str
-    """Высота миниатюры изображения."""
-    src: str
-    """URL миниатюры изображения."""
-    width: str
-    """Ширина миниатюры изображения."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class BreadcrumbUrl(BaseModel):
-    """Предоставляет информацию о навигационных крошках URL."""
-
-    crumbs: List[str]
-    """Список частей пути URL (навигационные крошки)."""
-    host: Optional[str] = None
-    """Доменное имя хоста (опционально)."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class RichSnippet(BaseModel):
-    """Содержит расширенную информацию о результате поиска."""
-
-    cseImage: Optional[CseImage] = None
-    """Информация об основном изображении (если имеется)."""
-    cseThumbnail: Optional[CseThumbnail] = None
-    """Информация о миниатюре изображения (если имеется)."""
-    metatags: Optional[Dict[str, Any]] = None
-    """Словарь метатегов страницы."""
-    softwaresourcecode: Optional[Dict[str, Any]] = None
-    """Информация об исходном коде программного обеспечения (если имеется)."""
-    code: Optional[List[Dict[str, Any]]] = None
-    """Список блоков кода (если имеются)."""
-    organization: Optional[Dict[str, Any]] = None
-    """Информация об организации (если имеется)."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class Page(BaseModel):
-    """Представляет страницу в пагинации результатов поиска."""
-
-    label: int
-    """Метка страницы (номер страницы)."""
-    # start: str
-    # """Параметр начала для пагинации."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class FindMoreOnGoogle(BaseModel):
-    """Предоставляет URL для поиска дополнительных результатов в Google."""
-
-    url: str
-    """URL для дополнительного поиска в Google."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class Context(BaseModel):
-    """Содержит контекстную информацию о поиске."""
-
-    title: str
-    """Заголовок контекста или поиска."""
-    total_results: str
-    """Общее количество найденных результатов."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class Result(BaseModel):
-    """Представляет один результат поиска."""
-
-    content: str
-    """Описание результата с форматированием."""
-    # contentNoFormatting: str
-    # """Описание результата без форматирования."""
-    title: str
-    """Заголовок результата с форматированием."""
-    # titleNoFormatting: str
-    # """Заголовок результата без форматирования."""
-    unescapedUrl: str
-    """Оригинальный URL результата без экранирования."""
-    # url: str
-    # """URL результата."""
-    # visibleUrl: str
-    # """Отображаемый URL (как видит пользователь)."""
-    # originalContextUrl: Optional[str] = None
-    # """Исходный URL контекста (опционально)."""
-    # height: Optional[str] = None
-    # """Высота изображения (если применимо)."""
-    # width: Optional[str] = None
-    # """Ширина изображения (если применимо)."""
-    # tbUrl: Optional[str] = None
-    # """URL миниатюры изображения (если имеется)."""
-    # tbMedUrl: Optional[str] = None
-    # """URL средней миниатюры (если имеется)."""
-    # tbLargeUrl: Optional[str] = None
-    # """URL большой миниатюры (если имеется)."""
-    # tbHeight: Optional[str] = None
-    # """Высота миниатюры (если имеется)."""
-    # tbMedHeight: Optional[str] = None
-    # """Высота средней миниатюры (если имеется)."""
-    # tbLargeHeight: Optional[str] = None
-    # """Высота большой миниатюры (если имеется)."""
-    # tbWidth: Optional[str] = None
-    # """Ширина миниатюры (если имеется)."""
-    # tbMedWidth: Optional[str] = None
-    # """Ширина средней миниатюры (если имеется)."""
-    # tbLargeWidth: Optional[str] = None
-    # """Ширина большой миниатюры (если имеется)."""
-    # imageId: Optional[str] = None
-    # """Идентификатор изображения (если имеется)."""
-    # breadcrumbUrl: Optional[BreadcrumbUrl] = None
-    # """Объект с информацией о навигационных крошках (опционально)."""
-    # fileFormat: Optional[str] = None
-    # """Формат файла изображения (например, 'image/jpeg')."""
-    # clicktrackUrl: Optional[str] = None
-    # """URL для отслеживания кликов (если имеется)."""
-    # formattedUrl: Optional[str] = None
-    # """Отформатированный URL результата (если имеется)."""
-    # richSnippet: Optional[RichSnippet] = None
-    # """Расширенная информация о результате (если имеется)."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class Cursor(BaseModel):
-    """Управляет навигацией по страницам результатов поиска."""
-
-    currentPageIndex: int
-    """Текущий индекс страницы в результатах поиска."""
-    # estimatedResultCount: Optional[str] = None
-    # """Оценочное количество результатов (опционально)."""
-    # moreResultsUrl: str
-    # """URL для получения дополнительных результатов."""
-    pages: Optional[List[Page]] = None
-    """Список объектов страниц для навигации (опционально)."""
-    # resultCount: Optional[str] = None
-    # """Количество результатов (опционально)."""
-    # searchResultTime: str
-    # """Время, затраченное на поиск."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
-
-class ServerResponse(BaseModel):
-    """Представляет ответ сервера на поисковый запрос."""
-
-    cursor: Cursor
-    """Объект курсора для навигации по результатам поиска."""
-    # findMoreOnGoogle: Optional[FindMoreOnGoogle] = None
-    # """Объект с URL для дополнительного поиска в Google (опционально)."""
-    # context: Optional[Context] = None
-    # """Контекст поиска (например, заголовок и общее количество результатов)."""
-    results: Optional[List[Result]] = None
-    """Список результатов поиска (опционально)."""
-    model_config = ConfigDict(
-        extra="ignore",
-    )
-
 
 class GoogleSearchError(Exception):
     """Custom exception class to handle errors related to Google Custom Search API"""
@@ -251,7 +65,7 @@ class GoogleCSEAPI:
         start: int = 0,
         hl: str = "ru",
         search_type: Optional[str] = None,
-    ) -> ServerResponse:
+    ) -> dict[str, str]:
         """
         Performs a search request to the Google CSE API.
 
@@ -321,7 +135,7 @@ class GoogleCSEAPI:
             raise GoogleSearchError(f"Failed to fetch data: {response.status_code}")
 
         # Return the response data in JSON format
-        return ServerResponse(**response.json())
+        return response.json()
 
     def search_sync(
         self,
@@ -330,7 +144,7 @@ class GoogleCSEAPI:
         start: int = 0,
         hl: str = "ru",
         search_type: Optional[str] = None,
-    ) -> ServerResponse:
+    ) -> dict[str, str]:
         """
         Performs a search request to the Google CSE API.
 
@@ -368,7 +182,7 @@ class GoogleCSEAPI:
             raise GoogleSearchError(f"Failed to fetch data: {response.status_code}")
 
         # Return the response data in JSON format
-        return ServerResponse(**response.json())
+        return response.json()
 
 
 class GCSEAPIComponent(LCToolComponent):
@@ -408,7 +222,6 @@ class GCSEAPIComponent(LCToolComponent):
             raw_results:ServerResponse = wrapper.search_sync(
                 query, num=max_results, start=max((page - 1) * max_results, 0)
             )
-            results = raw_results.model_dump(mode="json", exclude_none=True)
             return results["results"] if results["results"] else []
 
         tool = StructuredTool.from_function(
