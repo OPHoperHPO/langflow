@@ -1,3 +1,4 @@
+from backend.base.langflow.inputs.inputs import StrInput
 import httpx
 
 from typing import Any
@@ -10,7 +11,6 @@ from langflow.base.langchain_utilities.model import LCToolComponent
 from langflow.field_typing import Tool
 from langflow.inputs import IntInput, MultilineInput, SecretStrInput
 from langflow.schema import Data
-
 from typing import List, Optional, Dict, Any
 
 __all__ = ["GCSEAPIComponent"]
@@ -28,13 +28,18 @@ class GCSEAPIComponent(LCToolComponent):
             name="input_value",
             display_name="Input",
         ),
+        IntInput(name="page", display_name="Curr page", value=1, advanced=True),
         IntInput(name="max_results", display_name="Max Results", value=5, advanced=True),
+        StrInput(name="hl", display_name="Language code", value="ru", advanced=True),
+        StrInput(name="search_type", display_name="Search type", value=None, advanced=True),
     ]
 
     class GCSEAPISchema(BaseModel):
         query: str = Field(..., description="The search query")
         page: int = Field(default=1, description="Page in the search results to look up")
+        hl: str = Field("ru", description="Language code for the search results")
         max_results: int = Field(5, description="Maximum number of results to return")
+        search_type: Optional[str] = Field(None, description="Type of search results to return")
 
     def build_tool(self) -> Tool:
         class GoogleSearchError(BaseException):
@@ -140,25 +145,25 @@ class GCSEAPIComponent(LCToolComponent):
                         - `formattedUrl` (Optional[str]): Formatted URL.
                         - `richSnippet` (Optional[RichSnippet]): Extended information about the result, such as images, meta tags, and more.
                     """
-                    # Parameters for the search query
                     params = {
-                        "q": query,  # The search query
-                        "num": num,  # Number of results to retrieve
-                        "start": start,  # Starting index for pagination
-                        "hl": hl,  # Language of the search results
+                        "q": query,
+                        "num": num,
+                        "start": start,
+                        "hl": hl,
                     }
-            
+
                     if search_type == "image":
                         params["searchType"] = search_type
-            
-                    # Perform the GET request asynchronously
-                    response = await self.http_client.get("/", params=params)
-            
-                    # Raise an error if the request was unsuccessful
-                    if response.status_code != 200:
-                        raise GoogleSearchError(f"Failed to fetch data: {response.status_code}")
-            
-                    # Return the response data in JSON format
+
+                    async with httpx.AsyncClient(
+                        base_url=self.api_url,
+                        params={"authKey": self.api_token},
+                        transport=self.transport,
+                        limits=self.limits,
+                    ) as client:
+                        response = await client.get("/", params=params)
+                        response.raise_for_status()
+
                     return response.json()
             
                 def search_sync(
@@ -187,25 +192,25 @@ class GCSEAPIComponent(LCToolComponent):
             
                     The `ServerResponse` object returned contains the same structure as described in the `search` method.
                     """
-                    # Parameters for the search query
                     params = {
-                        "q": query,  # The search query
-                        "num": num,  # Number of results to retrieve
-                        "start": start,  # Starting index for pagination
-                        "hl": hl,  # Language of the search results
+                        "q": query,
+                        "num": num,
+                        "start": start,
+                        "hl": hl,
                     }
-            
+
                     if search_type == "image":
                         params["searchType"] = search_type
-            
-                    # Perform the GET request synchronously
-                    response = self.sync_client.get("/", params=params)
-            
-                    # Raise an error if the request was unsuccessful
-                    if response.status_code != 200:
-                        raise GoogleSearchError(f"Failed to fetch data: {response.status_code}")
-            
-                    # Return the response data in JSON format
+
+                    with httpx.Client(
+                        base_url=self.api_url,
+                        params={"authKey": self.api_token},
+                        transport=httpx.HTTPTransport(retries=8),
+                        limits=self.limits,
+                    ) as client:
+                        response = client.get("/", params=params)
+                        response.raise_for_status()
+
                     return response.json()
 
 
@@ -215,11 +220,11 @@ class GCSEAPIComponent(LCToolComponent):
             )
 
         def search_func(
-            query: str, page: int = 1, max_results: int = 5
+            query: str, page: int = 1, max_results: int = 5, hl: str = "ru", search_type: Optional[str] = None
         ) -> list[dict[str, Any]]:
 
             raw_results = wrapper.search_sync(
-                query, num=max_results, start=max((page - 1) * max_results, 0)
+                query, num=max_results, start=max((page - 1) * max_results, 0), hl=hl, search_type=search_type
             )
             return raw_results["results"] if raw_results["results"] else []
 
@@ -239,15 +244,17 @@ class GCSEAPIComponent(LCToolComponent):
             results = tool.run(
                 {
                     "query": self.input_value,
-                    "page": 1,
+                    "page": self.page,
                     "max_results": self.max_results,
+                    "hl": self.hl,
+                    "search_type": self.search_type,
                 }
             )
 
             data_list = [Data(data=result, text=result.get("content", "")) for result in results]
 
         except Exception as e:  # noqa: BLE001
-            logger.opt(exception=True).debug("Error running SerpAPI")
+            logger.opt(exception=True).debug("Error running GCSE ")
             self.status = f"Error: {e}"
             return [Data(data={"error": str(e)}, text=str(e))]
 
